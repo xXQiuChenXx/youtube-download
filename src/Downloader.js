@@ -1,3 +1,6 @@
+const path = require("path");
+const ytdl = require("@distube/ytdl-core");
+
 class Downloader {
   constructor({ cookies = [] }) {
     this.header = {
@@ -6,6 +9,26 @@ class Downloader {
     };
     if (cookies.length) {
       this.agent = ytdl.createAgent(cookies);
+    }
+    this.downloadPath = path.join(__dirname, "../downloads");
+  }
+
+  async downloadVideo() {}
+
+  async downloadAudio() {}
+
+  async downloadPlaylist({ title, videos }) {
+    const folder = path.join(
+      __dirname,
+      "./downloads/" + filterChars(playlist.title)
+    );
+    if (!fs.existsSync(folder)) fs.mkdirSync(folder);
+    for (const video of videos) {
+      await download({
+        videoURL: `https://www.youtube.com/watch?v=${video.id}`,
+        videoName: video.title,
+        playlist: folder,
+      });
     }
   }
 }

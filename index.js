@@ -1,4 +1,4 @@
-require('dotenv').config()
+require("dotenv").config();
 const fs = require("fs");
 const ytdl = require("@distube/ytdl-core");
 const path = require("path");
@@ -6,6 +6,7 @@ const YouTube = require("youtube-sr").default;
 const { process_video } = require("./ffmpeg");
 const { filterChars, wait } = require("./utils");
 const { searchYouTubeVideos } = require("./youtube-search");
+const Downloader = require("./src/Downloader");
 
 const agent = ytdl.createAgent(
   JSON.parse(fs.readFileSync(path.join(__dirname, "./cookies.json")))
@@ -58,6 +59,10 @@ async function download({ videoURL, videoName, playlist }) {
 }
 
 async function start() {
+  const cookies = JSON.parse(
+    fs.readFileSync(path.join(__dirname, "./cookies.json"))
+  );
+  const YTDownload = new Downloader({ cookies });
   // const videoURL = "https://www.youtube.com/watch?v=nlYskBsMbmE";
   // const videoURL = "https://www.youtube.com/watch?v=A5pn4-xOgOw";
   const videoURL = " NTMusicTrends";
@@ -67,24 +72,17 @@ async function start() {
 
   if (videoURL.startsWith("https://www.youtube.com/playlist")) {
     const playlist = await YouTube.getPlaylist(videoURL);
-    const folder = filterChars(playlist.title);
-    const absPath = path.join(__dirname, "./downloads/" + folder);
-    if (!fs.existsSync(absPath)) fs.mkdirSync(absPath);
-    for (const video of playlist.videos.slice(0, 5)) {
-      await download({
-        videoURL: `https://www.youtube.com/watch?v=${video.id}`,
-        videoName: video.title,
-        playlist: folder,
-      });
-    }
-    return;
+    return await YTDownload.downloadPlaylist(playlist);
   }
 
   if (!videoURL.startsWith("http")) {
     const videos = await searchYouTubeVideos(videoURL);
     for (const video of videos) {
-      const videoInfo = await ytdl.getInfo(`https://www.youtube.com/watch?v=${video.id.videoId}`, { agent });
-      if(videoInfo.videoDetails.lengthSeconds <= 60) continue;
+      const videoInfo = await ytdl.getInfo(
+        `https://www.youtube.com/watch?v=${video.id.videoId}`,
+        { agent }
+      );
+      if (videoInfo.videoDetails.lengthSeconds <= 60) continue;
       await download({
         videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
         videoName: video.snippet.title,
