@@ -84,7 +84,7 @@ async function start() {
 
     const chpslength = videoInfo.videoDetails?.chapters.length;
 
-    if (chpslength && chpslength > 2) {
+    if (chpslength && chpslength > 2 && false) {
       // The video have youtube chapters, separate them
       await process_video({
         chapters: videoInfo.videoDetails.chapters,

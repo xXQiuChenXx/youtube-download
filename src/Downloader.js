@@ -1,4 +1,7 @@
 const { filterChars } = require("./utils");
+const ffmpegPath = require("@ffmpeg-installer/ffmpeg").path;
+const ffmpeg = require("fluent-ffmpeg");
+ffmpeg.setFfmpegPath(ffmpegPath);
 const path = require("path");
 const ytdl = require("@distube/ytdl-core");
 const { wait } = require("./utils");
@@ -13,28 +16,44 @@ class Downloader {
     if (cookies.length) {
       this.agent = ytdl.createAgent(cookies);
     }
+    this.chooseFormat = ytdl.chooseFormat;
   }
 
   async getInfo({ videoURL, options }) {
-    console.log(videoURL);
     return await ytdl.getInfo(videoURL, {
       agent: this.agent,
       ...options,
     });
   }
-  async downloadVideo({ videoURL, videoTitle, playlist, quality = "highest" }) {
+
+  async downloadVideo({ videoURL, videoTitle, playlist, quality = 137 }) {
     return new Promise((resolve, reject) => {
       const videoName = filterChars(videoTitle);
       const filePath = path.join(
         __dirname,
+        `../downloads/${playlist ? `${playlist}/` : ""}${videoName}-ori.mp4`
+      );
+      const audioFile = path.join(
+        __dirname,
+        `../downloads/${playlist ? `${playlist}/` : ""}${videoName}.mp3`
+      );
+      const outputFile = path.join(
+        __dirname,
         `../downloads/${playlist ? `${playlist}/` : ""}${videoName}.mp4`
       );
+
       const videoStream = ytdl(videoURL, {
         requestOptions: this.header,
         quality,
         agent: this.agent,
-        filter: "videoonly",
       });
+
+      const audioStream = ytdl(videoURL, {
+        requestOptions: this.header,
+        agent: this.agent,
+        filter: "audioonly"
+      });
+      audioStream.pipe(fs.createWriteStream(audioFile));
 
       const output = fs.createWriteStream(filePath);
 
@@ -58,14 +77,31 @@ class Downloader {
         console.error("Error during file write:", err);
         resolve({ error: err, success: false });
       });
-
-      output.on("finish", () => {
-        console.log(`Downloaded ${videoName}.mp3`);
-        resolve({ filePath, success: true });
+      Promise.all([
+        new Promise((resolve) => videoStream.on("end", resolve)),
+        new Promise((resolve) => audioStream.on("end", resolve)),
+      ]).then(() => {
+        ffmpeg()
+          .input(filePath)
+          .input(audioFile)
+          .outputOptions("-c:v copy")
+          .outputOptions("-c:a aac")
+          .on("end", () => {
+            console.log("Merging completed");
+            console.log(`Downloaded ${videoName}.mp4`);
+            // Optionally delete the temporary video and audio files
+            fs.unlinkSync(filePath);
+            fs.unlinkSync(audioFile);
+            resolve({ filePath, success: true });
+          })
+          .on("error", (err) => {
+            console.error(`Error merging video and audio: ${err.message}`);
+          })
+          .save(outputFile);
       });
     });
   }
-  async downloadAudio({ videoURL, videoTitle, playlist, quality = "highest" }) {
+  async downloadAudio({ videoURL, videoTitle, playlist, quality }) {
     return new Promise((resolve, reject) => {
       const videoName = filterChars(videoTitle);
       const filePath = path.join(
