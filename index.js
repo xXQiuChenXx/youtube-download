@@ -12,51 +12,6 @@ const agent = ytdl.createAgent(
   JSON.parse(fs.readFileSync(path.join(__dirname, "./cookies.json")))
 );
 
-async function download({ videoURL, videoName, playlist }) {
-  const videoStream = ytdl(videoURL, {
-    requestOptions: {
-      "user-agent":
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/127.0.0.0 Safari/537.36 Edg/127.0.0.0",
-    },
-    agent,
-    filter: "audioonly",
-  });
-
-  videoName = filterChars(videoName);
-
-  const filePath = path.join(
-    __dirname,
-    `./downloads/${playlist ? `${playlist}/` : ""}${videoName}.mp3`
-  );
-
-  const output = fs.createWriteStream(filePath);
-
-  videoStream.on("progress", (chunkLength, downloaded, total) => {
-    const percent = ((downloaded / total) * 100).toFixed(2);
-    const downloadedMB = (downloaded / 1024 / 1024).toFixed(2);
-    const totalMB = (total / 1024 / 1024).toFixed(2);
-    console.log(
-      `Progress: ${percent}% (${downloadedMB}MB of ${totalMB}MB), ChunkSize: ${chunkLength}`
-    );
-  });
-
-  videoStream.pipe(output);
-
-  videoStream.on("error", (err) => {
-    console.error("Error during download:", err);
-  });
-
-  output.on("error", (err) => {
-    console.error("Error during file write:", err);
-  });
-
-  output.on("finish", () => {
-    console.log(`Downloaded ${videoName}.mp3`);
-  });
-
-  await wait(3 * 1000);
-  return { filePath };
-}
 
 async function start() {
   const cookies = JSON.parse(
