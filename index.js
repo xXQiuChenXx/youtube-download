@@ -4,7 +4,7 @@ const ytdl = require("@distube/ytdl-core");
 const path = require("path");
 const YouTube = require("youtube-sr").default;
 const { process_video } = require("./ffmpeg");
-const { wait } = require("./utils");
+const { wait } = require("./src/utils");
 const { searchYouTubeVideos } = require("./youtube-search");
 const Downloader = require("./src/Downloader");
 

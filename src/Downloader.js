@@ -2,6 +2,7 @@ import { filterChars } from "./utils";
 
 const path = require("path");
 const ytdl = require("@distube/ytdl-core");
+const { wait } = require("./utils");
 
 class Downloader {
   constructor({ cookies = [] }) {
@@ -65,15 +66,18 @@ class Downloader {
     });
   }
 
-  async downloadPlaylist({ title, videos }) {
-    const folder = path.join(__dirname, "./downloads/" + filterChars(title));
+  async downloadPlaylist({ title, videos, type }) {
+    const playlist = filterChars(title);
+    const folder = path.join(__dirname, "./downloads/" + playlist);
     if (!fs.existsSync(folder)) fs.mkdirSync(folder);
     for (const video of videos) {
-      await download({
+      const videoInfo = {
         videoURL: `https://www.youtube.com/watch?v=${video.id}`,
         videoName: video.title,
-        playlist: folder,
-      });
+        playlist,
+      };
+      if (type === "video") await this.downloadVideo(videoInfo);
+      if (type === "audio") await this.downloadAudio(videoInfo);
     }
   }
 }
