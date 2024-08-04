@@ -1,4 +1,3 @@
-// Replace with your YouTube Data API key
 const apiKey = process.env.API_KEY;
 
 async function searchYouTubeVideos(channelId) {
