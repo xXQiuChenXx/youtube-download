@@ -23,7 +23,7 @@ async function start() {
     "Enter the video quality that you want (default to highest): "
   );
   let skipShorts = prompt(
-    "Do you want to download Youtube Shorts? (yes or no)"
+    "Do you want to download Youtube Shorts? (yes or no): "
   );
 
   if (videoType === "1" || videoType === 1) videoType = "audio";
@@ -45,9 +45,9 @@ async function start() {
   } else if (!videoURL.startsWith("http")) {
     const videos = await searchYouTubeVideos(videoURL);
     for (const video of videos) {
-      const videoInfo = await YTDownload.getInfo(
-        `https://www.youtube.com/watch?v=${video.id.videoId}`
-      );
+      const videoInfo = await YTDownload.getInfo({
+        videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
+      });
       if (videoInfo.videoDetails.lengthSeconds <= 60 && skipShorts) continue;
       if (videoType === "audio")
         await YTDownload.downloadAudio({
@@ -65,7 +65,7 @@ async function start() {
       wait(3000);
     }
   } else {
-    const videoInfo = await YTDownload.getInfo(videoURL);
+    const videoInfo = await YTDownload.getInfo({ videoURL });
 
     let res;
 
