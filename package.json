@@ -24,7 +24,7 @@
   },
   "homepage": "https://github.com/xXQiuChenXx/youtube-download#readme",
   "dependencies": {
-    "@distube/ytdl-core": "^4.13.7",
+    "@distube/ytdl-core": "^4.14.0",
     "@ffmpeg-installer/ffmpeg": "^1.1.0",
     "dotenv": "^16.4.5",
     "fluent-ffmpeg": "^2.1.3",

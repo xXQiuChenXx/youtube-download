@@ -115,7 +115,7 @@ class Downloader {
     for (const video of videos) {
       const videoInfo = {
         videoURL: `https://www.youtube.com/watch?v=${video.id}`,
-        videoName: video.title,
+        videoTitle: video.title,
         playlist,
       };
       if (type === "video") await this.downloadVideo(videoInfo);

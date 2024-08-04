@@ -52,13 +52,13 @@ async function start() {
       if (videoType === "audio")
         await YTDownload.downloadAudio({
           videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
-          videoName: video.snippet.title,
+          videoTitle: video.snippet.title,
           quality,
         });
       if (videoType === "video") {
         await YTDownload.downloadVideo({
           videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
-          videoName: video.snippet.title,
+          videoTitle: video.snippet.title,
           quality,
         });
       }
@@ -72,12 +72,12 @@ async function start() {
     if (videoType === "audio")
       res = await YTDownload.downloadAudio({
         videoURL,
-        videoName: videoInfo.videoDetails.title,
+        videoTitle: videoInfo.videoDetails.title,
       });
     if (videoType === "video")
       res = await YTDownload.downloadVideo({
         videoURL,
-        videoName: videoInfo.videoDetails.title,
+        videoTitle: videoInfo.videoDetails.title,
       });
     const { filePath } = res;
 
