@@ -124,4 +124,4 @@ class Downloader {
   }
 }
 
-export default Downloader;
+module.exports =  Downloader;
