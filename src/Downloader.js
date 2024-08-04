@@ -147,7 +147,7 @@ class Downloader {
 
   async downloadPlaylist({ title, videos, type }) {
     const playlist = filterChars(title);
-    const folder = path.join(__dirname, "./downloads/" + playlist);
+    const folder = path.join(__dirname, "../downloads/" + playlist);
     if (!fs.existsSync(folder)) fs.mkdirSync(folder);
     for (const video of videos) {
       const videoInfo = {
