@@ -9,3 +9,6 @@ Download Youtube Video or mp3 using JavaScript. Since Youtube videos have copyri
 3. Run `cd youtube-download`
 4. Run `npm install`
 5. Run `node index.js` or `npm start`   
+
+## Why 403 Error
+It is because you have to parse in the cookies, to do so, find for extension call `EditThisCookies` and install it, browse youtube.com and export the cookies put it into `cookies.json`
