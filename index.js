@@ -1,6 +1,5 @@
 require("dotenv").config();
 const fs = require("fs");
-const ytdl = require("@distube/ytdl-core");
 const path = require("path");
 const YouTube = require("youtube-sr").default;
 const prompt = require("prompt-sync")();

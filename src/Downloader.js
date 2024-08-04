@@ -120,6 +120,7 @@ class Downloader {
       };
       if (type === "video") await this.downloadVideo(videoInfo);
       if (type === "audio") await this.downloadAudio(videoInfo);
+      await wait(3000)
     }
   }
 }
