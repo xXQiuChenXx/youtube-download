@@ -1,5 +1,5 @@
 # youtube-download
-Download Youtube Video or mp3 using JavaScript
+Download Youtube Video or mp3 using JavaScript. Since Youtube videos have copyright, therefore, strictly for personal use only
 
 ![](https://github.com/xXQiuChenXx/youtube-download/blob/master/imgs/image.png?raw=true)
 
