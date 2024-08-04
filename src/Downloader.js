@@ -14,6 +14,12 @@ class Downloader {
     }
   }
 
+  async getInfo({ videoURL, options }) {
+    return await ytdl.getInfo(videoURL, {
+      agent: this.agent,
+      ...options,
+    });
+  }
   async downloadVideo() {}
 
   async downloadAudio({ videoURL, videoTitle, playlist, format }) {
@@ -25,7 +31,7 @@ class Downloader {
       );
       const videoStream = ytdl(videoURL, {
         requestOptions: this.header,
-        agent,
+        agent: this.agent,
         filter: "audioonly",
       });
 

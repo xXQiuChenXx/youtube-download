@@ -4,14 +4,9 @@ const ytdl = require("@distube/ytdl-core");
 const path = require("path");
 const YouTube = require("youtube-sr").default;
 const { process_video } = require("./ffmpeg");
-const { filterChars, wait } = require("./utils");
+const { wait } = require("./utils");
 const { searchYouTubeVideos } = require("./youtube-search");
 const Downloader = require("./src/Downloader");
-
-const agent = ytdl.createAgent(
-  JSON.parse(fs.readFileSync(path.join(__dirname, "./cookies.json")))
-);
-
 
 async function start() {
   const cookies = JSON.parse(
@@ -33,15 +28,15 @@ async function start() {
   if (!videoURL.startsWith("http")) {
     const videos = await searchYouTubeVideos(videoURL);
     for (const video of videos) {
-      const videoInfo = await ytdl.getInfo(
-        `https://www.youtube.com/watch?v=${video.id.videoId}`,
-        { agent }
+      const videoInfo = await YTDownload.getInfo(
+        `https://www.youtube.com/watch?v=${video.id.videoId}`
       );
       if (videoInfo.videoDetails.lengthSeconds <= 60) continue;
       await download({
         videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
         videoName: video.snippet.title,
       });
+      wait(3000);
     }
     return;
   }
