@@ -12,8 +12,9 @@ async function start() {
   const cookies = JSON.parse(
     fs.readFileSync(path.join(__dirname, "./cookies.json"))
   );
-  const YTDownload = new Downloader({ cookies });
 
+  const YTDownload = new Downloader({ cookies });
+  if (!fs.existsSync("./downloads")) fs.mkdirSync("./downloads");
   const videoURL = prompt("Youtube video link or channel name: ");
   console.log("Download Video Type:");
   console.log("1. MP3");

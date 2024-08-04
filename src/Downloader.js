@@ -2,6 +2,7 @@ const { filterChars } = require("./utils");
 const path = require("path");
 const ytdl = require("@distube/ytdl-core");
 const { wait } = require("./utils");
+const fs = require("fs");
 
 class Downloader {
   constructor({ cookies = [] }) {
@@ -15,7 +16,7 @@ class Downloader {
   }
 
   async getInfo({ videoURL, options }) {
-    console.log(videoURL)
+    console.log(videoURL);
     return await ytdl.getInfo(videoURL, {
       agent: this.agent,
       ...options,
@@ -32,7 +33,7 @@ class Downloader {
         requestOptions: this.header,
         quality,
         agent: this.agent,
-        filter: "videoandaudio",
+        filter: "videoonly",
       });
 
       const output = fs.createWriteStream(filePath);
@@ -125,4 +126,4 @@ class Downloader {
   }
 }
 
-module.exports =  Downloader;
+module.exports = Downloader;
