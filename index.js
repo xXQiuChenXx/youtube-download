@@ -3,9 +3,9 @@ const fs = require("fs");
 const path = require("path");
 const YouTube = require("youtube-sr").default;
 const prompt = require("prompt-sync")();
-const { process_video } = require("./ffmpeg");
+const { process_video } = require("./src/ffmpeg");
 const { wait } = require("./src/utils");
-const { searchYouTubeVideos } = require("./youtube-search");
+const { searchYouTubeVideos } = require("./src/youtube-search");
 const Downloader = require("./src/Downloader");
 
 async function start() {
