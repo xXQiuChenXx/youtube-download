@@ -15,6 +15,7 @@ class Downloader {
   }
 
   async getInfo({ videoURL, options }) {
+    console.log(videoURL)
     return await ytdl.getInfo(videoURL, {
       agent: this.agent,
       ...options,
