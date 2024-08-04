@@ -16,13 +16,19 @@ async function start() {
   const YTDownload = new Downloader({ cookies });
 
   const videoURL = prompt("Youtube video link or channel name: ");
-  console.log("Please choose a download format:");
-  console.log("1. MP4");
-  console.log("2. MP3");
-  const choice = prompt("Enter your choice (1, 2, or 3): ");
+  console.log("Download Video Type:");
+  console.log("1. MP3");
+  console.log("2. MP4");
+  let videoType = prompt("Enter your choice (1, or 2): ");
+  const quality = prompt(
+    "Enter the video quality that you want (default to highest): "
+  );
   let skipShorts = prompt(
     "Do you want to download Youtube Shorts? (yes or no)"
   );
+
+  if (videoType === "1" || videoType === 1) videoType = "audio";
+  else if (videoType === "2" || videoType === 2) videoType = "video";
 
   if (skipShorts === "yes" || skipShorts === "y") skipShorts = true;
   else skipShorts = false;
@@ -36,7 +42,7 @@ async function start() {
 
   if (videoURL.startsWith("https://www.youtube.com/playlist")) {
     const playlist = await YouTube.getPlaylist(videoURL);
-    await YTDownload.downloadPlaylist(playlist);
+    await YTDownload.downloadPlaylist({ ...playlist, type: videoType });
   } else if (!videoURL.startsWith("http")) {
     const videos = await searchYouTubeVideos(videoURL);
     for (const video of videos) {
@@ -44,19 +50,37 @@ async function start() {
         `https://www.youtube.com/watch?v=${video.id.videoId}`
       );
       if (videoInfo.videoDetails.lengthSeconds <= 60 && skipShorts) continue;
-      await YTDownload.downloadAudio({
-        videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
-        videoName: video.snippet.title,
-      });
+      if (videoType === "audio")
+        await YTDownload.downloadAudio({
+          videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
+          videoName: video.snippet.title,
+          quality,
+        });
+      if (videoType === "video") {
+        await YTDownload.downloadVideo({
+          videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
+          videoName: video.snippet.title,
+          quality,
+        });
+      }
       wait(3000);
     }
   } else {
     const videoInfo = await YTDownload.getInfo(videoURL);
 
-    const { filePath } = await YTDownload.downloadAudio({
-      videoURL,
-      videoName: videoInfo.videoDetails.title,
-    });
+    let res;
+
+    if (videoType === "audio")
+      res = await YTDownload.downloadAudio({
+        videoURL,
+        videoName: videoInfo.videoDetails.title,
+      });
+    if (videoType === "video")
+      res = await YTDownload.downloadVideo({
+        videoURL,
+        videoName: videoInfo.videoDetails.title,
+      });
+    const { filePath } = res;
 
     const chpslength = videoInfo.videoDetails?.chapters.length;
 

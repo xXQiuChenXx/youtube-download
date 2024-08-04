@@ -21,9 +21,50 @@ class Downloader {
       ...options,
     });
   }
-  async downloadVideo() {}
+  async downloadVideo({ videoURL, videoTitle, playlist, quality = "highest" }) {
+    return new Promise((resolve, reject) => {
+      const videoName = filterChars(videoTitle);
+      const filePath = path.join(
+        __dirname,
+        `../downloads/${playlist ? `${playlist}/` : ""}${videoName}.mp4`
+      );
+      const videoStream = ytdl(videoURL, {
+        requestOptions: this.header,
+        quality,
+        agent: this.agent,
+        filter: "videoandaudio",
+      });
 
-  async downloadAudio({ videoURL, videoTitle, playlist, format }) {
+      const output = fs.createWriteStream(filePath);
+
+      videoStream.on("progress", (chunkLength, downloaded, total) => {
+        const percent = ((downloaded / total) * 100).toFixed(2);
+        const downloadedMB = (downloaded / 1024 / 1024).toFixed(2);
+        const totalMB = (total / 1024 / 1024).toFixed(2);
+        console.log(
+          `Progress: ${percent}% (${downloadedMB}MB of ${totalMB}MB), ChunkSize: ${chunkLength}`
+        );
+      });
+
+      videoStream.pipe(output);
+
+      videoStream.on("error", (err) => {
+        console.error("Error during download:", err);
+        resolve({ error: err, success: false });
+      });
+
+      output.on("error", (err) => {
+        console.error("Error during file write:", err);
+        resolve({ error: err, success: false });
+      });
+
+      output.on("finish", () => {
+        console.log(`Downloaded ${videoName}.mp3`);
+        resolve({ filePath, success: true });
+      });
+    });
+  }
+  async downloadAudio({ videoURL, videoTitle, playlist, quality = "highest" }) {
     return new Promise((resolve, reject) => {
       const videoName = filterChars(videoTitle);
       const filePath = path.join(
@@ -32,6 +73,7 @@ class Downloader {
       );
       const videoStream = ytdl(videoURL, {
         requestOptions: this.header,
+        quality,
         agent: this.agent,
         filter: "audioonly",
       });

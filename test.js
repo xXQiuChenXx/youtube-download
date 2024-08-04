@@ -32,6 +32,8 @@ async function test() {
   console.log("1. Say Hello");
   console.log("2. Say Goodbye");
   console.log("3. Exit");
+  if(name) console.log('ss')
+  console.log(name)
 
   // Prompt the user to make a selection
   const choice = prompt("Enter your choice (1, 2, or 3): ");
