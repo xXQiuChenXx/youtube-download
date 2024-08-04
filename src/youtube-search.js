@@ -1,20 +1,20 @@
 const apiKey = process.env.API_KEY;
 
 async function searchYouTubeVideos(channelId) {
-  const ch_params = new URLSearchParams({
-    key: apiKey,
-    q: channelId,
-    part: "snippet,id",
-    order: "date",
-    maxResults: 1,
-    type: "channel",
-  });
-
-  const ch_url = new URL(
-    `https://www.googleapis.com/youtube/v3/search?${ch_params.toString()}`
-  );
-
   try {
+    const ch_params = new URLSearchParams({
+      key: apiKey,
+      q: channelId,
+      part: "snippet,id",
+      order: "date",
+      maxResults: 1,
+      type: "channel",
+    });
+
+    const ch_url = new URL(
+      `https://www.googleapis.com/youtube/v3/search?${ch_params.toString()}`
+    );
+
     const response = await fetch(ch_url.toString());
     const ch_data = await response.json();
     console.log(ch_data);
