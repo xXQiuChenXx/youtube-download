@@ -1,5 +1,4 @@
-import { filterChars } from "./utils";
-
+const { filterChars } = require("./utils");
 const path = require("path");
 const ytdl = require("@distube/ytdl-core");
 const { wait } = require("./utils");
@@ -120,7 +119,7 @@ class Downloader {
       };
       if (type === "video") await this.downloadVideo(videoInfo);
       if (type === "audio") await this.downloadAudio(videoInfo);
-      await wait(3000)
+      await wait(3000);
     }
   }
 }
