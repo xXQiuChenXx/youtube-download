@@ -26,9 +26,34 @@ class Downloader {
     });
   }
 
-  async downloadVideo({ videoURL, videoTitle, playlist, quality = 137 }) {
-    return new Promise((resolve, reject) => {
+  async downloadVideo({ videoURL, videoTitle, playlist }) {
+    return new Promise(async (resolve, reject) => {
       const videoName = filterChars(videoTitle);
+      const videoInfo = await this.getInfo({ videoURL });
+      const videoFormat =
+        videoInfo.formats.find(
+          (x) => x.itag === 137 && x.qualityLabel === "1080p"
+        ) ||
+        videoInfo.formats.find(
+          (format) =>
+            format.qualityLabel &&
+            format.qualityLabel?.includes("1080p") &&
+            format.hasVideo &&
+            !format.hasAudio
+        ) ||
+        videoInfo.formats.find(
+          (format) =>
+            format?.qualityLabel?.includes("720p") &&
+            format.hasVideo &&
+            !format.hasAudio
+        ) ||
+        videoInfo.formats.find(
+          (format) =>
+            format?.qualityLabel?.includes("360p") &&
+            format.hasVideo &&
+            !format.hasAudio
+        );
+      // console.log(videoFormat);
       const filePath = path.join(
         __dirname,
         `../downloads/${playlist ? `${playlist}/` : ""}${videoName}-ori.mp4`
@@ -44,14 +69,14 @@ class Downloader {
 
       const videoStream = ytdl(videoURL, {
         requestOptions: this.header,
-        quality,
         agent: this.agent,
+        format: videoFormat,
       });
 
       const audioStream = ytdl(videoURL, {
         requestOptions: this.header,
         agent: this.agent,
-        filter: "audioonly"
+        filter: "audioonly",
       });
       audioStream.pipe(fs.createWriteStream(audioFile));
 
@@ -101,7 +126,7 @@ class Downloader {
       });
     });
   }
-  async downloadAudio({ videoURL, videoTitle, playlist, quality }) {
+  async downloadAudio({ videoURL, videoTitle, playlist }) {
     return new Promise((resolve, reject) => {
       const videoName = filterChars(videoTitle);
       const filePath = path.join(
@@ -110,7 +135,6 @@ class Downloader {
       );
       const videoStream = ytdl(videoURL, {
         requestOptions: this.header,
-        quality,
         agent: this.agent,
         filter: "audioonly",
       });

@@ -20,9 +20,7 @@ async function start() {
   console.log("1. MP3");
   console.log("2. MP4");
   let videoType = prompt("Enter your choice (1, or 2): ");
-  const quality = prompt(
-    "Enter the video quality that you want (default to highest): "
-  );
+ 
   let skipShorts = prompt(
     "Do you want to download Youtube Shorts? (yes or no): "
   );
@@ -54,19 +52,18 @@ async function start() {
         await YTDownload.downloadAudio({
           videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
           videoTitle: video.snippet.title,
-          quality,
         });
       if (videoType === "video") {
         await YTDownload.downloadVideo({
           videoURL: `https://www.youtube.com/watch?v=${video.id.videoId}`,
           videoTitle: video.snippet.title,
-          quality,
         });
       }
       wait(3000);
     }
   } else {
     const videoInfo = await YTDownload.getInfo({ videoURL });
+    // console.log(videoInfo.formats)
 
     let res;
 
